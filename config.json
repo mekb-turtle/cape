@@ -1,0 +1,8 @@
+{
+	"originalHost": "107.182.233.85",
+	"imageMime": "image/png",
+	"capesDir": "capes",
+	"capesUrl": "capes",
+	"listenPort": 80,
+	"listenIp": "127.0.0.1"
+}

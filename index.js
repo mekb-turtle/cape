@@ -2,9 +2,11 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-process.chdir(__dirname);
+const config = require("./config.json");
 
-const images = fs.readdirSync("capes");
+const capesDir = path.join(__dirname, config.capesDir);
+
+const images = fs.readdirSync(capesDir);
 let imagesCache = {};
 
 const server = http.createServer(async (req, res) => {
@@ -18,12 +20,13 @@ const server = http.createServer(async (req, res) => {
 		url = url.substring(1);
 		url = url.split("/").filter(e=>e.length);
 		let cape = url[1];
-		if (url[0] == "capes") {
+		if (url[0] == config.capesUrl) {
 			if (url.length == 2 && cape.match(/^[0-9a-zA-Z_]{1,16}\.png$/)) {
 				if (images.includes(cape)) {
 					if (!imagesCache[cape]) {
 						try {
-							imagesCache[cape] = await fs.readFileSync(path.join("capes", cape));
+							let file = path.join(capesDir, cape);
+							imagesCache[cape] = await fs.readFileSync(file);
 						} catch (err) {
 							console.error(err);
 							delete imagesCache[cape];
@@ -33,15 +36,14 @@ const server = http.createServer(async (req, res) => {
 					}
 					if (imagesCache[cape]) {
 						res.statusCode = 200;
-						res.setHeader("Content-Type", "image/png");
+						res.setHeader("Content-Type", config.imageMime);
 						res.end(imagesCache[cape]);
-						console.log(cape,imagesCache[cape]);
 						return;
 					}
 				}
 			}
 			res.statusCode = 301;
-			res.setHeader("Location", "http://107.182.233.85" + req.url);
+			res.setHeader("Location", config.originalHost, req.url);
 			res.end();
 			return;
 		}
@@ -54,6 +56,6 @@ const server = http.createServer(async (req, res) => {
 	}
 });
 
-server.listen(80, "127.0.0.1", () => {
+server.listen(config.listenPort, config.listenIp, () => {
 	console.log(`Server running`);
 });
