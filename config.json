@@ -4,5 +4,6 @@
 	"capesDir": "capes",
 	"capesUrl": "capes",
 	"listenPort": 80,
-	"listenIp": "127.0.0.1"
+	"listenIp": "127.0.0.1",
+	"debugLog": true
 }

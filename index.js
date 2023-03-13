@@ -23,6 +23,7 @@ const server = http.createServer(async (req, res) => {
 		if (url[0] == config.capesUrl) {
 			if (url.length == 2 && cape.match(/^[0-9a-zA-Z_]{1,16}\.png$/)) {
 				if (images.includes(cape)) {
+					if (config.debugLog) console.debug("Request:", "found cape,", req.url, cape);
 					if (!imagesCache[cape]) {
 						try {
 							let file = path.join(capesDir, cape);
@@ -43,10 +44,13 @@ const server = http.createServer(async (req, res) => {
 				}
 			}
 			res.statusCode = 301;
-			res.setHeader("Location", config.originalHost, req.url);
+			let loc = "http://" + config.originalHost + req.url;
+			res.setHeader("Location", loc);
+			if (config.debugLog) console.debug("Request:", "capes,", req.url, "to", loc);
 			res.end();
 			return;
 		}
+		if (config.debugLog) console.debug("Request:", "404,", req.url);
 		res.statusCode = 404;
 		res.end("Not found");
 	} catch (err) {
